@@ -1,0 +1,1 @@
+require 'ipizza_omniauth_provider'
