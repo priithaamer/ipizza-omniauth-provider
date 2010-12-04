@@ -1,23 +1,20 @@
+require 'rubygems'
 require 'rake'
-require 'rake/testtask'
-require 'rake/rdoctask'
 
-desc 'Default: run unit tests.'
-task :default => :test
-
-desc 'Test the ipizza_omniauth_provider plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-end
-
-desc 'Generate documentation for the ipizza_omniauth_provider plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'IpizzaOmniauthProvider'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = 'ipizza-omniauth-provider'
+    
+    gemspec.summary = 'iPizza authentication strategy provider for Omniauth'
+    gemspec.description = <<-DESC
+      Integrates iPizza authentication to your rails app almost effortlessly.
+    DESC
+    
+    gemspec.email = 'priit@fraktal.ee'
+    gemspec.homepage = 'http://github.com/priithaamer/ipizza-omniauth-provider'
+    gemspec.authors = ['Priit Haamer']
+  end
+rescue LoadError
+  puts 'Jeweler not available. Install it with: gem install jeweler'
 end
