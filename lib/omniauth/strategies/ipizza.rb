@@ -25,9 +25,7 @@ module OmniAuth
           provider = ipizza_provider_for(request.params['bank'])
 
           req = provider.authentication_request
-          
-          # TODO: it is not very nice to ask for service url via class parameter.
-          url = [provider.class.service_url, Rack::Utils.build_query(req.request_params)] * '?'
+          url = [req.service_url, Rack::Utils.build_query(req.request_params)] * '?'
           
           redirect url
         end
