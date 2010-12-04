@@ -3,12 +3,15 @@ iPizza auth strategy for OmniAuth
 
 iPizza authentication strategy provider for [Omniauth](https://github.com/intridea/omniauth). Uses [ipizza gem](https://github.com/priithaamer/ipizza) as dependency.
 
+Installation
+------------
+
+Add gem dependency in your `Gemfile` and install the gem:
+
+    gem 'ipizza-omniauth-provider'
+
 Usage
 -----
-
-Install as Rails plugin:
-
-    rails plugin install git://github.com/priithaamer/ipizza-omniauth-provider.git
 
 Make sure you have iPizza configured properly in `config/ipizza.yml` file. See the instructions from [ipizza gem page](https://github.com/priithaamer/ipizza).
 
