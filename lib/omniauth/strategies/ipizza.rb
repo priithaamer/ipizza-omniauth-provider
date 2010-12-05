@@ -27,6 +27,8 @@ module OmniAuth
           req = provider.authentication_request
           url = [req.service_url, Rack::Utils.build_query(req.request_params)] * '?'
           
+          debug "Redirecting to #{url}"
+          
           redirect url
         end
       end
@@ -42,19 +44,27 @@ module OmniAuth
 
         @env['REQUEST_METHOD'] = 'GET'
         
-        provider = ipizza_provider_for(request.params['VK_SND_ID'])
-        resp = provider.authentication_response(request.params)
+        # Silly workaround to detect the nordea response
+        if request.params['B02K_CUSTID'] then request.params['VK_SND_ID'] = 'nordea' end
         
-        if resp.success? and resp.valid?
-          @user_data = {'personal_code' => resp.info_social_security_id, 'name' => resp.info_name}
-          @env['omniauth.auth'] = auth_hash
-          
-          debug "iPizza request was authenticated successfully. User data: #{auth_hash.inspect}"
-          
-          call_app!
+        if request.params['VK_SND_ID']
+          provider = ipizza_provider_for(request.params['VK_SND_ID'])
+          resp = provider.authentication_response(request.params)
+        
+          if resp.valid? and resp.success?
+            @user_data = {'personal_code' => resp.info_social_security_id, 'name' => resp.info_name}
+            @env['omniauth.auth'] = auth_hash
+            
+            debug "iPizza request was authenticated successfully. User data: #{auth_hash.inspect}"
+            
+            call_app!
+          else
+            debug 'Could not authenticate iPizza request'
+            fail!(:invalid_credentials, {'error' => 'Invalid bank response'})
+          end
         else
-          debug 'Could not authenticate iPizza request'
-          fail!(:invalid_credentials, {'error' => 'Invalid bank response'})
+          debug 'Did not recognize iPizza request'
+          fail(:invalid_credentials, {'error' => 'Bank request cancelled'})
         end
       end
       

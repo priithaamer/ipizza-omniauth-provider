@@ -14,7 +14,7 @@ begin
     gemspec.email = 'priit@fraktal.ee'
     gemspec.homepage = 'http://github.com/priithaamer/ipizza-omniauth-provider'
     gemspec.authors = ['Priit Haamer']
-    gemspec.add_dependency 'ipizza', '0.4.0'
+    gemspec.add_dependency 'ipizza', '0.4.2'
   end
 rescue LoadError
   puts 'Jeweler not available. Install it with: gem install jeweler'
