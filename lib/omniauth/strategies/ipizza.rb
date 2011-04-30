@@ -33,13 +33,13 @@ module OmniAuth
               redirect url
             rescue => e
               debug "Failed to create provider rquest: #{e.inspect}"
-              fail!(:internal_error, {'internal_error' => "Failed to create request for provider '#{request.params['bank']}'."})
+              fail!(:internal_error, {'ipizza_error' => 'internal_error', 'message' => "Failed to create request for provider '#{request.params['bank']}'."})
             end
           else
-            fail!(:invalid_ipizza_provider, {'invalid_ipizza_provider' => "Invalid Ipizza provider '#{request.params['bank']}'"})
+            fail!(:invalid_ipizza_provider, {'ipizza_error' => 'invalid_ipizza_provider', 'message' => "Invalid Ipizza provider '#{request.params['bank']}'"})
           end
         else
-          fail!(:bank_identifier_missing, {'bank_identifier_missing' => 'Bank identifier is missing'})
+          fail!(:bank_identifier_missing, {'ipizza_error' => 'bank_identifier_missing', 'message' => 'Bank identifier is missing'})
         end
       end
 
@@ -66,14 +66,14 @@ module OmniAuth
               call_app!
             else
               debug 'Could not authenticate iPizza request'
-              fail!(:invalid_credentials, {'invalid_bank_response' => 'Invalid bank response'})
+              fail!(:invalid_credentials, {'ipizza_error' => 'invalid_credentials', 'message' => 'Invalid bank response'})
             end
           else
-            fail!(:invalid_ipizza_provider, {'invalid_ipizza_provider' => "Invalid Ipizza provider '#{request.params['VK_SND_ID']}'"})
+            fail!(:invalid_ipizza_provider, {'ipizza_error' => 'invalid_ipizza_provider', 'message' => "Invalid Ipizza provider '#{request.params['VK_SND_ID']}'"})
           end
         else
           debug 'Did not recognize iPizza request'
-          fail!(:invalid_credentials, {'bank_request_cancelled' => 'Bank request cancelled'})
+          fail!(:invalid_credentials, {'ipizza_error' => 'invalid_credentials', 'message' => 'Bank request cancelled'})
         end
       end
       
