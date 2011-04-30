@@ -73,7 +73,7 @@ module OmniAuth
           end
         else
           debug 'Did not recognize iPizza request'
-          fail(:invalid_credentials, {'bank_request_cancelled' => 'Bank request cancelled'})
+          fail!(:invalid_credentials, {'bank_request_cancelled' => 'Bank request cancelled'})
         end
       end
       
