@@ -86,6 +86,8 @@ module OmniAuth
         case bank.downcase
         when 'swedbank'
           ::Ipizza::Provider::Swedbank.new
+        when 'hp'
+          ::Ipizza::Provider::Swedbank.new
         when 'eyp'
           ::Ipizza::Provider::Seb.new
         when 'seb'
