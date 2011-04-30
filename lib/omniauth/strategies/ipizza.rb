@@ -19,24 +19,28 @@ module OmniAuth
       end
 
       def request_phase
-        if env['REQUEST_METHOD'] == 'GET'
-          get_credentials
-        else
+        if request.params['bank']
           provider = ipizza_provider_for(request.params['bank'])
-
-          req = provider.authentication_request
-          url = [req.service_url, Rack::Utils.build_query(req.request_params)] * '?'
           
-          debug "Redirecting to #{url}"
-          
-          redirect url
+          if provider
+            begin
+              req = provider.authentication_request
+            
+              url = [req.service_url, Rack::Utils.build_query(req.request_params)] * '?'
+        
+              debug "Redirecting to #{url}"
+        
+              redirect url
+            rescue => e
+              debug "Failed to create provider rquest: #{e.inspect}"
+              fail!(:internal_error, {'internal_error' => "Failed to create request for provider '#{request.params['bank']}'."})
+            end
+          else
+            fail!(:invalid_ipizza_provider, {'invalid_ipizza_provider' => "Invalid Ipizza provider '#{request.params['bank']}'"})
+          end
+        else
+          fail!(:bank_identifier_missing, {'bank_identifier_missing' => 'Bank identifier is missing'})
         end
-      end
-
-      def get_credentials
-        OmniAuth::Form.build(@title) do
-          text_field 'Bank', 'bank'
-        end.to_response
       end
 
       def callback_phase
@@ -49,22 +53,27 @@ module OmniAuth
         
         if request.params['VK_SND_ID']
           provider = ipizza_provider_for(request.params['VK_SND_ID'])
-          resp = provider.authentication_response(request.params)
+          
+          if provider 
+            resp = provider.authentication_response(request.params)
         
-          if resp.valid? and resp.success?
-            @user_data = {'personal_code' => resp.info_social_security_id, 'name' => resp.info_name}
-            @env['omniauth.auth'] = auth_hash
+            if resp.valid? and resp.success?
+              @user_data = {'personal_code' => resp.info_social_security_id, 'name' => resp.info_name}
+              @env['omniauth.auth'] = auth_hash
             
-            debug "iPizza request was authenticated successfully. User data: #{auth_hash.inspect}"
+              debug "iPizza request was authenticated successfully. User data: #{auth_hash.inspect}"
             
-            call_app!
+              call_app!
+            else
+              debug 'Could not authenticate iPizza request'
+              fail!(:invalid_credentials, {'invalid_bank_response' => 'Invalid bank response'})
+            end
           else
-            debug 'Could not authenticate iPizza request'
-            fail!(:invalid_credentials, {'error' => 'Invalid bank response'})
+            fail!(:invalid_ipizza_provider, {'invalid_ipizza_provider' => "Invalid Ipizza provider '#{request.params['VK_SND_ID']}'"})
           end
         else
           debug 'Did not recognize iPizza request'
-          fail(:invalid_credentials, {'error' => 'Bank request cancelled'})
+          fail(:invalid_credentials, {'bank_request_cancelled' => 'Bank request cancelled'})
         end
       end
       
